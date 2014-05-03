@@ -1,10 +1,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 #include "Pit.hpp"
 #include "ResourceHolder.hpp"
-
+#include "Utility.hpp"
+#include "Pieces.hpp"
 
 namespace Tetris {
 
@@ -19,7 +19,8 @@ namespace Tetris {
             bool isRunning() const noexcept;
 
         private:
-            std::unique_ptr<Pit> mPit;
+            UPtr<Pit> mPit;
+            UPtr<Piece> mNextPiece;
             TextureHolder mTextureHolder;
             bool mIsRunning;
 

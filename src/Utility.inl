@@ -18,6 +18,6 @@ static std::unique_ptr<T> make_unique_helper(std::true_type, Args&&... args) {
 }
 
 template <typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args) {
+std::unique_ptr<T> makeUPtr(Args&&... args) {
    return make_unique_helper<T>(std::is_array<T>(), std::forward<Args>(args)...);
 }

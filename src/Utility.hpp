@@ -2,7 +2,11 @@
 
 #include <memory>
 
+//types
+template <typename T> using UPtr = std::unique_ptr<T>;
+
+
 template <typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args);
+UPtr<T> makeUPtr(Args&&... args);
 
 #include "Utility.inl"

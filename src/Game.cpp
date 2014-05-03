@@ -1,13 +1,13 @@
 #include <stdexcept>
 #include "Game.hpp"
 #include "Utility.hpp"
+#include "Pieces.hpp"
 
 
 namespace Tetris {
     static const std::string IMAGES_DIR = "../images/";
 
     Game::Game() 
-        :mPit()
     {
         loadResources();
     }
@@ -24,7 +24,8 @@ namespace Tetris {
         mTextureHolder.load(TextureID::T, IMAGES_DIR + "T.png");
 
 
-        mPit = make_unique<Pit>(mTextureHolder.get(TextureID::Pit));
+        mPit = makeUPtr<Pit>(mTextureHolder.get(TextureID::Pit));
+        mNextPiece = makeUPtr<I>(mTextureHolder, 0, 0);
     }
 
     bool Game::isRunning() const noexcept {
@@ -43,6 +44,7 @@ namespace Tetris {
 
     void Game::render(sf::RenderTarget &rt) const {
         rt.draw(*mPit);
+        rt.draw(*mNextPiece);
     }
 
 }

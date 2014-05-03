@@ -12,8 +12,8 @@ int main() {
             game.handleEvent(e);
         }
 
+        app.clear();
         game.render(app);
-
         app.display();
     }
 

@@ -4,7 +4,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(EXECUTABLE_NAME "Tetris")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g")
-add_executable(${EXECUTABLE_NAME} main.cpp Pit.cpp Game.cpp)
+add_executable(${EXECUTABLE_NAME} main.cpp Pit.cpp Game.cpp Pieces.cpp)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
