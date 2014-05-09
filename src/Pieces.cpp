@@ -3,35 +3,82 @@
 
 namespace Tetris {
 
-    Block::Block(const sf::Texture &texture, int xPos, int yPos)
-        : mBlockSprite(texture)
-    {
-        mBlockSprite.setPosition(xPos, yPos);
+    static void moveBlocksToNewPositions(std::array<UPtr<Block>,4> &blocks, const std::array<sf::Vector2i,4> &rotationPosition){
+        for(size_t i = 0; i < blocks.size(); i++) {
+            const sf::Vector2i &blockPosition = rotationPosition[i];
+            blocks[i]->move(blockPosition);
+        }
     }
 
-    
+
+    Block::Block(const sf::Texture &texture, const sf::Vector2u &pixelPosition)
+        : mBlockSprite(texture)
+    {
+        mBlockSprite.setPosition(sf::Vector2f(pixelPosition));
+    }
+
+    void Block::move(const sf::Vector2i &newPos) {
+        sf::Vector2u texSize(mBlockSprite.getTextureRect().width, 
+                                     mBlockSprite.getTextureRect().height);
+
+
+        mBlockSprite.setPosition(newPos.x * texSize.x, newPos.y * texSize.y);
+            
+    }
+
     void Block::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(mBlockSprite, states);
     }
 
     
-    Piece::Piece(std::array<Block,4> &&blocks)
-        : mBlocks(blocks)
-    {}
-   
-
-    void Piece::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        for(auto block : mBlocks){
-            target.draw(block, states);
+    Piece::Piece(const Array2D<sf::Vector2i,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2u &piecePixelPosition) 
+        :mCurrentRotation(0), mOffset(0,0), mRotatationPositions(rotationPositions)
+    {
+        int i = 0;
+        for(auto &blockPosition : mRotatationPositions[mCurrentRotation]) {
+             mPtrBlocks[i++] = makeUPtr<Block>(blockTexture, piecePixelPosition + 
+                    sf::Vector2u(blockPosition.x * blockTexture.getSize().x, blockPosition.y * blockTexture.getSize().y));
         }
     }
 
-    I::I(const TextureHolder &textures, int xPos, int yPos)
-        : Piece(std::array<Block,4>{{Block(textures.get(TextureID::I), xPos, yPos),
-                    Block(textures.get(TextureID::I), xPos, yPos + textures.get(TextureID::I).getSize().y), 
-                    Block(textures.get(TextureID::I), xPos, yPos + textures.get(TextureID::I).getSize().y * 2), 
-                    Block(textures.get(TextureID::I), xPos, yPos + textures.get(TextureID::I).getSize().y * 3)}})
+    void Piece::rotateRight() {
+       mCurrentRotation++;
+       mCurrentRotation %= mRotatationPositions.size();
+       moveBlocksToNewPositions(mPtrBlocks, mRotatationPositions[mCurrentRotation]);
+    }
+
+    void Piece::rotateLeft() {
+       mCurrentRotation--;
+       mCurrentRotation %= mRotatationPositions.size();
+       moveBlocksToNewPositions(mPtrBlocks, mRotatationPositions[mCurrentRotation]);
+    }
+
+    void Piece::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+        for(auto &block : mPtrBlocks){
+            target.draw(*block, states);
+        }
+    }
+
+    I::I(const TextureHolder &textures, const sf::Vector2u &pos)
+        :Piece({{
+                {{{0,0},{0,1},{0,2},{0,3}}},
+                {{{1,1},{0,1},{-1,1},{-2,1}}},
+                {{{0,2},{0,1},{0,0},{0,-1}}},
+                {{{-1,1},{0,1},{1,1},{2,1}}},
+                }}, 
+                textures.get(TextureID::I), pos)
     {}
+
+    J::J(const TextureHolder &textures, const sf::Vector2u &pos)
+        :Piece({{
+                {{{1,0},{1,1},{1,2},{0,2}}},
+                {{{2,1},{1,1},{0,1},{0,0}}},
+                {{{1,2},{1,1},{1,0},{2,0}}},
+                {{{0,1},{1,1},{2,1},{2,2}}},
+                }}, 
+                textures.get(TextureID::J), pos)
+    {}
+
 
 
 }

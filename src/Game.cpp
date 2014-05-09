@@ -25,7 +25,8 @@ namespace Tetris {
 
 
         mPit = makeUPtr<Pit>(mTextureHolder.get(TextureID::Pit));
-        mNextPiece = makeUPtr<I>(mTextureHolder, 0, 0);
+        mNextPiece = makeUPtr<J>(mTextureHolder, sf::Vector2u(0,0));
+        mNextPiece->rotateRight();
     }
 
     bool Game::isRunning() const noexcept {
@@ -33,9 +34,15 @@ namespace Tetris {
     }
 
     void Game::handleEvent(const sf::Event &e) {
-        if(e.type == sf::Event::Closed){
+        switch(e.type){
+            case sf::Event::Closed:
             mIsRunning = false;
+            break;
+            case sf::Event::KeyPressed:
+            default:
+            break;
         }
+
     }
 
 

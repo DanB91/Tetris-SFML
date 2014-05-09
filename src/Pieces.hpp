@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <map>
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
 #include "Pit.hpp"
@@ -10,12 +11,9 @@ namespace Tetris {
 
     class Block : public sf::Drawable {
         public:
-            //xPos and yPos represent position in pixels
-            Block(const sf::Texture &texture, int xPos, int yPos);
-            void moveLeft();
-            void moveRight();
-            void moveUp();
-            void moveDown();
+            //pos represent position in pixels
+            Block(const sf::Texture &texture, const sf::Vector2u &pixelPosition);
+            void move(const sf::Vector2i &newPos);
 
         private:
             sf::Sprite mBlockSprite;
@@ -31,10 +29,13 @@ namespace Tetris {
             void rotateRight();
 
         protected:
-            Piece(std::array<Block,4> &&blocks);
+            Piece(const Array2D<sf::Vector2i,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2u &pixelPosition);
 
         private:
-            std::array<Block,4>  mBlocks;
+            int mCurrentRotation;
+            sf::Vector2i mOffset;
+            std::array<UPtr<Block>,4> mPtrBlocks;
+            Array2D<sf::Vector2i,4,4> mRotatationPositions;
 
             virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
     };
@@ -42,9 +43,47 @@ namespace Tetris {
 
     class I : public Piece{
         public:
-            //xPos and yPos represent starting position in pixels
-            I(const TextureHolder &textures, int xPos, int yPos);
+            //pos represent starting position in pixels
+            I(const TextureHolder &textures, const sf::Vector2u &pos);
 
     };
 
+
+    class J : public Piece{
+        public:
+            //pos represent starting position in pixels
+            J(const TextureHolder &textures, const sf::Vector2u &pos);
+
+    };
+
+    class L : public Piece{
+        public:
+            //pos represent starting position in pixels
+            L(const TextureHolder &textures, const sf::Vector2u &pos);
+
+    };
+    class O : public Piece{
+        public:
+            //pos represent starting position in pixels
+            O(const TextureHolder &textures, const sf::Vector2u &pos);
+
+    };
+    class S : public Piece{
+        public:
+            //pos represent starting position in pixels
+            S(const TextureHolder &textures, const sf::Vector2u &pos);
+
+    };
+    class Z : public Piece{
+        public:
+            //pos represent starting position in pixels
+            Z(const TextureHolder &textures, const sf::Vector2u &pos);
+
+    };
+    class T : public Piece{
+        public:
+            //pos represent starting position in pixels
+            T(const TextureHolder &textures, const sf::Vector2u &pos);
+
+    };
 }
