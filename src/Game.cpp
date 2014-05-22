@@ -6,6 +6,7 @@
 
 namespace Tetris {
   static const std::string IMAGES_DIR = "../images/";
+  static bool keyWasReleased = true;
   
   Game::Game() 
   :mIsRunning(true)
@@ -28,22 +29,35 @@ namespace Tetris {
     mPit = makeUPtr<Pit>(mTextureHolder.get(TextureID::Pit));
     mNextPiece = makeUPtr<I>(mTextureHolder, sf::Vector2u(0,0));
   }
+
+  void Game::handleKeyEvent(const sf::Event &e){
+      if (e.type == sf::Event::KeyPressed &&
+              e.key.code == sf::Keyboard::X &&
+              keyWasReleased) {
+          mNextPiece->rotateRight();
+          keyWasReleased = false;
+      } else if (e.type == sf::Event::KeyReleased) {
+          keyWasReleased = true;
+      }
+  }
   
   bool Game::isRunning() const noexcept {
     return mIsRunning;
   }
   
   void Game::handleEvent(const sf::Event &e) {
-    switch(e.type){
+      switch(e.type){
       case sf::Event::Closed:
-	mIsRunning = false;
-	break;
-    }
-    
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::X)){
-      mNextPiece->rotateRight();
-    }
-    
+          mIsRunning = false;
+          break;
+      case sf::Event::KeyPressed:
+      case sf::Event::KeyReleased:
+          handleKeyEvent(e);
+
+      }
+
+
+
   }
   
   

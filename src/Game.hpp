@@ -26,6 +26,7 @@ namespace Tetris {
 
 
             void loadResources();
+            void handleKeyEvent(const sf::Event &e);
 
 
     

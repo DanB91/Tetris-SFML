@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <map>
+#include <ostream>
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
 #include "Pit.hpp"
@@ -15,10 +16,14 @@ namespace Tetris {
             Block(const sf::Texture &texture, const sf::Vector2u &pixelPosition);
             void move(const sf::Vector2i &newPos);
 
+            friend std::ostream& operator<<(std::ostream &os, const Block &block);
+
+
         private:
             sf::Sprite mBlockSprite;
 
             virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
 
     };
 

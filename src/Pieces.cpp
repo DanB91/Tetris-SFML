@@ -5,9 +5,20 @@ namespace Tetris {
 
     static void moveBlocksToNewPositions(std::array<UPtr<Block>,4> &blocks, const std::array<sf::Vector2i,4> &rotationPosition){
         for(size_t i = 0; i < blocks.size(); i++) {
+            std::cout << "Block " << i << std::endl;
+            std::cout << "Block original pos: " << *blocks[i] << std::endl;
+
             const sf::Vector2i &blockPosition = rotationPosition[i];
             blocks[i]->move(blockPosition);
+
+            std::cout << "Rotation Vector: X:" << blockPosition.x << " Y: " << blockPosition.y << std::endl;
+            std::cout << "Block new pos: " << *blocks[i] << std::endl << std::endl;
         }
+    }
+
+    std::ostream& operator<<(std::ostream &os, const Block &block)
+    {
+        os << "X: " << block.mBlockSprite.getPosition().x << " Y: " << block.mBlockSprite.getPosition().y;
     }
 
 
@@ -23,8 +34,10 @@ namespace Tetris {
 
 
         mBlockSprite.setPosition(newPos.x * texSize.x, newPos.y * texSize.y);
-            
+
     }
+
+
 
     void Block::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(mBlockSprite, states);
