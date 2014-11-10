@@ -11,7 +11,7 @@ namespace Tetris {
     class Game : sf::NonCopyable {
 
         public:
-            Game();
+            Game(const std::string &imagesPath);
 
             void handleEvent(const sf::Event &e);
             void update(const sf::Time &delta);
@@ -21,9 +21,10 @@ namespace Tetris {
         private:
             UPtr<Pit> mPit;
             UPtr<Piece> mNextPiece;
+            UPtr<Piece> mCurrentPiece;
             TextureHolder mTextureHolder;
             bool mIsRunning;
-
+            std::string imagesPath;
 
             void loadResources();
             void handleKeyEvent(const sf::Event &e);

@@ -1,23 +1,29 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Game.hpp"
-int main() {
-    sf::RenderWindow app(sf::VideoMode(800,600), "Tetris");
-    Tetris::Game game;
-    
+
+int main(int argc, char **argv) {
+    sf::RenderWindow window(sf::VideoMode(800,600), "Tetris");
+    Tetris::Game game((argc > 1) ? argv[1] : "../images/");
+    sf::Clock clock;
+
+    window.setFramerateLimit(60);
+
     while(game.isRunning()) {
         sf::Event e;
 
-        while(app.pollEvent(e)) {
+        while(window.pollEvent(e)) {
             game.handleEvent(e);
         }
 
-        app.clear();
-        game.render(app);
-        app.display();
+        game.update(clock.restart());
+
+        window.clear();
+        game.render(window);
+        window.display();
     }
 
-    app.close();
+    window.close();
 
     return 0;
 }
