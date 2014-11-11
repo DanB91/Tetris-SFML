@@ -2,22 +2,23 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace Tetris {
-    
-    class Pit : public sf::Drawable, 
-                sf::NonCopyable {
 
-        public:
-            Pit(const sf::Texture &pitTexture);
+class Pit : public sf::Drawable,
+        sf::NonCopyable {
 
-        private:
-            virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+public:
+    static constexpr int HEIGHT = 20;
+    static constexpr int WIDTH = 10;
 
-            sf::Sprite mPitSprite;
-            
-    };
+    Pit(const sf::Texture &pitTexture);
 
-}
+private:
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+    sf::Sprite mPitSprite;
+
+};
+
 
 
 

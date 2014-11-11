@@ -4,37 +4,36 @@
 #include <map>
 #include <SFML/Graphics.hpp>
 
-namespace Tetris {
-    template <typename Identifier, typename Resource>
-        class ResourceHolder {
-            public:
-                
-                template <typename... Args>
-                    void load(Identifier id, const std::string &filename, Args... args);
+template <typename Identifier, typename Resource>
+class ResourceHolder {
+public:
 
-                const Resource &get(Identifier id) const;
+    template <typename... Args>
+    void load(Identifier id, const std::string &filename, Args... args);
 
-            private:
-                std::map<Identifier, Resource> mResourceMap;  
-        };
+    const Resource &get(Identifier id) const;
 
-
-    enum class TextureID{
-        Pit,
-        I,
-        J,
-        L,
-        O,
-        S,
-        T,
-        Z
-    };
-
-    typedef ResourceHolder<TextureID, sf::Texture> TextureHolder;
+private:
+    std::map<Identifier, Resource> mResourceMap;
+};
 
 
+enum class TextureID{
+    Pit,
+    I,
+    J,
+    L,
+    O,
+    S,
+    T,
+    Z
+};
 
-}
+typedef ResourceHolder<TextureID, sf::Texture> TextureHolder;
+
+
+
+
 
 
 

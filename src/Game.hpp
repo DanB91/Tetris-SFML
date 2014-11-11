@@ -6,30 +6,29 @@
 #include "Utility.hpp"
 #include "Pieces.hpp"
 
-namespace Tetris {
 
-    class Game : sf::NonCopyable {
+class Game : sf::NonCopyable {
 
-        public:
-            Game(const std::string &imagesPath);
+public:
+    Game(const std::string &mImagesPath);
 
-            void handleEvent(const sf::Event &e);
-            void update(const sf::Time &delta);
-            void render(sf::RenderTarget &rt) const;
-            bool isRunning() const noexcept;
+    void handleEvent(const sf::Event &e);
+    void update(const sf::Time &delta);
+    void render(sf::RenderTarget &rt) const;
+    bool isRunning() const noexcept;
 
-        private:
-            UPtr<Pit> mPit;
-            UPtr<Piece> mNextPiece;
-            UPtr<Piece> mCurrentPiece;
-            TextureHolder mTextureHolder;
-            bool mIsRunning;
-            std::string imagesPath;
+private:
+    UPtr<Pit> mPit;
+    UPtr<Piece> mNextPiece;
+    UPtr<Piece> mCurrentPiece;
+    TextureHolder mTextureHolder;
+    bool mIsRunning;
+    std::string mImagesPath;
 
-            void loadResources();
-            void handleKeyEvent(const sf::Event &e);
+    void loadResources();
+    void handleKeyEvent(const sf::Event &e);
 
 
     
-    };
-}
+};
+

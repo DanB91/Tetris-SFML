@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <iostream>
 
 //types
 template <typename T> 
@@ -11,5 +12,13 @@ using Array2D = std::array<std::array<T,numColumns>,numRows>;
 
 template <typename T, typename... Args>
 UPtr<T> makeUPtr(Args&&... args);
+
+#ifdef DEBUG
+    #define DBGMSG(msg) \
+        std::cout << "DBG: " << __FILE__ << "(" << __LINE__ << ") " \
+        << msg << std::endl
+#else
+    #define DBGMSG(msg)
+#endif
 
 #include "Utility.inl"

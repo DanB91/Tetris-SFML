@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv) {
     sf::RenderWindow window(sf::VideoMode(800,600), "Tetris");
-    Tetris::Game game((argc > 1) ? argv[1] : "../images/");
+    Game game((argc > 1) ? argv[1] : "../images/");
     sf::Clock clock;
 
     window.setFramerateLimit(60);
