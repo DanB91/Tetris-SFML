@@ -6,7 +6,6 @@
 #include <ostream>
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
-#include "Pit.hpp"
 
 
 
@@ -14,7 +13,9 @@ class Block : public sf::Drawable {
 public:
     //pos represent position in pixels
     Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition);
-    void move(const sf::Vector2f &newPos, const sf::Vector2f& offset);
+    
+    //newPos is in block coordinates, while offset uses pixel measurements
+    void move(const PitCoordinates &newPos, const sf::Vector2f& offset);
 
     const sf::Vector2f& getPosition() const;
 
@@ -31,21 +32,28 @@ private:
 
 class Piece : public sf::Drawable{
 public:
-    const std::array<Block,4> &getBlocks() const noexcept;
+    std::array<UPtr<Block>,4>& takeBlocks();
+    int bottom() const; //gets the y position of the bottom most block.  Used to see if piece should keep moving down
+    int left() const; //gets the x position of the left most block.  Used to see if piece should keep moving down
+    int right() const; //gets the x position of the right most block.  Used to see if piece should keep moving down
+    const PitCoordinates& coordinatesForBlock(const UPtr<Block> &block) const;
+
     void rotateLeft();
     void rotateRight();
     void moveLeft();
     void moveRight();
     void moveDown();
+    void moveToOffset(const sf::Vector2f& offset); //moves piece to a pixel position
+
 
 protected:
-    Piece(const Array2D<sf::Vector2f,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2f &pixelPosition);
+    Piece(const Array2D<PitCoordinates,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2f &pixelPosition);
 
 private:
-    int mCurrentRotation;
-    const sf::Vector2f mOffset;
-    Array2D<sf::Vector2f,4,4> mRotatationPositions;
-    std::array<Block,4> mBlocks;
+    int mCurrentRotation = 0;
+    sf::Vector2f mOffset;
+    Array2D<PitCoordinates,4,4> mRotatationPositions;
+    std::array<UPtr<Block>,4> mBlocks;
 
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };
@@ -97,3 +105,15 @@ public:
 
 };
 
+enum class PieceTypes {
+    I = 0,
+    J,
+    L,
+    O,
+    S,
+    Z, 
+    T
+};
+
+
+constexpr int NUM_PIECE_TYPES = 7;

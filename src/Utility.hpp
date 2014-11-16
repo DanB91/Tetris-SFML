@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 //types
 template <typename T> 
@@ -12,6 +13,8 @@ using Array2D = std::array<std::array<T,numColumns>,numRows>;
 
 template <typename T, typename... Args>
 UPtr<T> makeUPtr(Args&&... args);
+
+using PitCoordinates = sf::Vector2i;
 
 #ifdef DEBUG
     #define DBGMSG(msg) \
