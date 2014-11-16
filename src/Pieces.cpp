@@ -31,6 +31,7 @@ std::ostream& operator<<(std::ostream &os, const Block &block)
     mBlockSprite.setPosition(sf::Vector2f(pixelPosition));
 }
 
+
 void Block::move(const PitCoordinates& newPos, const sf::Vector2f& offset=sf::Vector2f(0,0) ) {
     sf::Vector2f texSize(mBlockSprite.getTextureRect().width,
             mBlockSprite.getTextureRect().height);
@@ -69,8 +70,29 @@ Piece::Piece(const Array2D<PitCoordinates,4,4> &rotationPositions, const sf::Tex
                 sf::Vector2f(rotationPositions[0][3].x * blockTexture.getSize().x, rotationPositions[0][3].y * blockTexture.getSize().y)),
     }}
 
-{
+{}
 
+
+
+    Piece::Piece(const Piece &rhs)
+:mCurrentRotation(rhs.mCurrentRotation), mOffset(rhs.mOffset), mRotatationPositions(rhs.mRotatationPositions)
+{
+    int i = 0;
+    for (auto& block : rhs.mBlocks) {
+        mBlocks[i++] = makeUPtr<Block>(*block);
+    }
+}
+
+Piece& Piece::operator=(Piece rhs){
+    std::swap(mCurrentRotation, rhs.mCurrentRotation);
+    std::swap(mOffset, rhs.mOffset);
+    std::swap(mRotatationPositions, rhs.mRotatationPositions);
+    std::swap(mBlocks, rhs.mBlocks);
+
+    return *this;
+}
+
+Piece::~Piece() {
 }
 
 void Piece::rotateRight() {
@@ -164,6 +186,10 @@ const PitCoordinates& Piece::coordinatesForBlock(const UPtr<Block> &block) const
     }
 
    return mRotatationPositions.at(mCurrentRotation).at(i);
+}
+
+const std::array<PitCoordinates, 4>& Piece::coordinatesOfAllBlocks() const {
+    return mRotatationPositions[mCurrentRotation];
 }
 
 void Piece::draw(sf::RenderTarget &target, sf::RenderStates states) const {

@@ -20,6 +20,8 @@ static UPtr<Piece> generateNextPiece(const TextureHolder&);
 static bool canPieceMoveDown(const Piece &piece, const Pit &pit);
 static bool canPieceMoveLeft(const Piece &piece, const Pit &pit);
 static bool canPieceMoveRight(const Piece &piece, const Pit &pit);
+static bool canPieceRotateRight(const Piece &piece, const Pit &pit);
+static bool canPieceRotateLeft(const Piece &piece, const Pit &pit);
 static void dropPiece(Piece& piece, const Pit& pit);
 static bool canSpawn(const Piece& piece, const Pit& pit);
 
@@ -62,19 +64,67 @@ void Game::loadResources() {
 
 //TODO: Need to do collision detection for other blocks
 static bool canPieceMoveDown(const Piece &piece, const Pit &pit) {
-    int bottom = piece.bottom();
+    Piece tmpPiece = piece;
+    tmpPiece.moveDown();
 
-    return bottom + 1 < Pit::HEIGHT; 
+    for (auto& coords : tmpPiece.coordinatesOfAllBlocks()) {
+        if (!pit.isBlockInBounds(coords) || pit.isBlockAtCoordinates(coords)) {
+            return false;
+        }
+    }
+
+    return true; 
 }
 static bool canPieceMoveLeft(const Piece &piece, const Pit &pit) {
-    return piece.left() - 1 >= 0;
+    Piece tmpPiece = piece;
+    tmpPiece.moveLeft();
+
+    for (auto& coords : tmpPiece.coordinatesOfAllBlocks()) {
+        if (!pit.isBlockInBounds(coords) || pit.isBlockAtCoordinates(coords)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 static bool canPieceMoveRight(const Piece &piece, const Pit &pit) {
-    return piece.right() + 1 < Pit::WIDTH;
+    Piece tmpPiece = piece;
+    tmpPiece.moveRight();
+
+    for (auto& coords : tmpPiece.coordinatesOfAllBlocks()) {
+        if (!pit.isBlockInBounds(coords) || pit.isBlockAtCoordinates(coords)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
+static bool canPieceRotateRight(const Piece &piece, const Pit &pit) {
+    Piece tmpPiece = piece;
+    tmpPiece.rotateRight();
 
+    for (auto& coords : tmpPiece.coordinatesOfAllBlocks()) {
+        if (!pit.isBlockInBounds(coords) || pit.isBlockAtCoordinates(coords)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool canPieceRotateLeft(const Piece &piece, const Pit &pit) {
+    Piece tmpPiece = piece;
+    tmpPiece.rotateLeft();
+
+    for (auto& coords : tmpPiece.coordinatesOfAllBlocks()) {
+        if (!pit.isBlockInBounds(coords) || pit.isBlockAtCoordinates(coords)) {
+            return false;
+        }
+    }
+
+    return true;
+}
 static void dropPiece(Piece& piece, const Pit& pit) {
     while (canPieceMoveDown(piece, pit)) {
         piece.moveDown();
@@ -101,10 +151,10 @@ void Game::handleKeyEvent(const sf::Event &e) {
                 dropPiece(*mCurrentPiece, *mPit);
                 break;
             case sf::Keyboard::Z:
-                mCurrentPiece->rotateLeft();
+                if (canPieceRotateLeft(*mCurrentPiece, *mPit)) mCurrentPiece->rotateLeft();
                 break;
             case sf::Keyboard::X:
-                mCurrentPiece->rotateRight();
+                if (canPieceRotateRight(*mCurrentPiece, *mPit)) mCurrentPiece->rotateRight();
             default:
                 break;
         }

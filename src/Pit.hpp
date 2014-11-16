@@ -15,6 +15,8 @@ public:
 
     Pit(const sf::Texture &pitTexture, const sf::Vector2f &pos);
 
+    bool isBlockAtCoordinates(const PitCoordinates &coords) const;
+    bool isBlockInBounds(const PitCoordinates &coords) const;
     void putBlockAtCoords(UPtr<Block> block, const PitCoordinates &coordinates); 
 
 private:

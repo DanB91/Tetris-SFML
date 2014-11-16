@@ -13,7 +13,7 @@ class Block : public sf::Drawable {
 public:
     //pos represent position in pixels
     Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition);
-    
+
     //newPos is in block coordinates, while offset uses pixel measurements
     void move(const PitCoordinates &newPos, const sf::Vector2f& offset);
 
@@ -37,6 +37,7 @@ public:
     int left() const; //gets the x position of the left most block.  Used to see if piece should keep moving down
     int right() const; //gets the x position of the right most block.  Used to see if piece should keep moving down
     const PitCoordinates& coordinatesForBlock(const UPtr<Block> &block) const;
+    const std::array<PitCoordinates, 4>& coordinatesOfAllBlocks() const;
 
     void rotateLeft();
     void rotateRight();
@@ -46,8 +47,10 @@ public:
     void moveToOffset(const sf::Vector2f& offset); //moves piece to a pixel position
 
 
-protected:
     Piece(const Array2D<PitCoordinates,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2f &pixelPosition);
+    Piece(const Piece &rhs);
+    Piece& operator=(Piece rhs);
+    virtual ~Piece();
 
 private:
     int mCurrentRotation = 0;

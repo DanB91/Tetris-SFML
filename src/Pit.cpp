@@ -21,6 +21,15 @@ void Pit::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 
 
 
+bool Pit::isBlockInBounds(const PitCoordinates &coords) const {
+    return coords.x < Pit::WIDTH && coords.x >= 0 && coords.y >= 0 &&
+        coords.y < Pit::HEIGHT;
+}
+
+bool Pit::isBlockAtCoordinates(const PitCoordinates &coords) const {
+    return  mBlocks.at(coords.x).at(coords.y) != nullptr;
+
+}
 void Pit::putBlockAtCoords(UPtr<Block> block, const PitCoordinates &coordinates) {
     mBlocks.at(coordinates.x).at(coordinates.y) = std::move(block);
 }
