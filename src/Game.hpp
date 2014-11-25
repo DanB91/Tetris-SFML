@@ -5,12 +5,12 @@
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
 #include "Pieces.hpp"
-
+#include "Score.hpp" 
 
 class Game : sf::NonCopyable {
 
 public:
-    Game(const std::string &mImagesPath);
+    Game(const std::string &resourcesPath);
 
     void handleEvent(const sf::Event &e);
     void update(const sf::Time &delta);
@@ -21,9 +21,15 @@ private:
     UPtr<Pit> mPit;
     UPtr<Piece> mNextPiece;
     UPtr<Piece> mCurrentPiece;
+    UPtr<Score> mScore;
+
     TextureHolder mTextureHolder;
+    FontHolder mFontHolder;
+
     bool mIsRunning;
+    std::string mResourcesPath;
     std::string mImagesPath;
+    std::string mFontsPath;
 
     void loadResources();
     void handleKeyEvent(const sf::Event &e);

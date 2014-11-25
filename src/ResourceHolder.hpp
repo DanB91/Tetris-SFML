@@ -29,9 +29,12 @@ enum class TextureID{
     Z
 };
 
+enum class FontID {
+    GameFont
+};
+
 typedef ResourceHolder<TextureID, sf::Texture> TextureHolder;
-
-
+typedef ResourceHolder<FontID, sf::Font> FontHolder;
 
 
 

@@ -5,16 +5,16 @@
 
 
 
-static void moveBlocksToNewPositions(std::array<UPtr<Block>,4> &blocks, const std::array<PitCoordinates,4> &rotationPosition, const sf::Vector2f& offset){
+static void moveBlocksToNewPositions(std::array<Block,4> &blocks, const std::array<PitCoordinates,4> &rotationPosition, const sf::Vector2f& offset){
     for(auto i = 0u; i < blocks.size(); i++) {
-        DBGMSG("Block " << i);
-        DBGMSG("Block original pos: " << *blocks[i]);
+        //DBGMSG("Block " << i);
+        //DBGMSG("Block original pos: " << blocks[i]);
 
         const PitCoordinates& blockPosition = rotationPosition[i];
-        blocks[i]->move(blockPosition, offset);
+        blocks[i].move(blockPosition, offset);
 
-        DBGMSG("Rotation Vector: X:" << blockPosition.x << " Y: " << blockPosition.y);
-        DBGMSG("Block new pos: " << *blocks[i]);
+        //DBGMSG("Rotation Vector: Row:" << blockPosition.row << " Column: " << blockPosition.column);
+        //DBGMSG("Block new pos: " << blocks[i]);
     }
 }
 
@@ -24,20 +24,21 @@ std::ostream& operator<<(std::ostream &os, const Block &block)
 }
 
 
-    Block::Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition)
-: mBlockSprite(texture)
+    Block::Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition, const PitCoordinates &coords)
+: mBlockSprite(texture), mCoordinates(coords)
 
 {
     mBlockSprite.setPosition(sf::Vector2f(pixelPosition));
 }
 
 
-void Block::move(const PitCoordinates& newPos, const sf::Vector2f& offset=sf::Vector2f(0,0) ) {
+void Block::move(const PitCoordinates& newPos, const sf::Vector2f& offset ) {
     sf::Vector2f texSize(mBlockSprite.getTextureRect().width,
             mBlockSprite.getTextureRect().height);
 
-    sf::Vector2f relativePos(newPos.x * texSize.x, newPos.y * texSize.y);
+    sf::Vector2f relativePos(newPos.column * texSize.x, newPos.row * texSize.y);
     mBlockSprite.setPosition(relativePos + offset);
+    mCoordinates = newPos;
 }
 
 
@@ -52,6 +53,10 @@ const sf::Vector2f& Block::getPosition() const {
 }
 
 
+const PitCoordinates& Block::coordinates() const {
+    return mCoordinates;
+}
+
 
 
 
@@ -60,40 +65,20 @@ const sf::Vector2f& Block::getPosition() const {
 Piece::Piece(const Array2D<PitCoordinates,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2f &offsetPosition)
     :mOffset(offsetPosition), mRotatationPositions(rotationPositions),
     mBlocks{{
-        makeUPtr<Block>(blockTexture, offsetPosition +
-                sf::Vector2f(rotationPositions[0][0].x * blockTexture.getSize().x, rotationPositions[0][0].y * blockTexture.getSize().y)),
-        makeUPtr<Block>(blockTexture, offsetPosition +
-                sf::Vector2f(rotationPositions[0][1].x * blockTexture.getSize().x, rotationPositions[0][1].y * blockTexture.getSize().y)),
-        makeUPtr<Block>(blockTexture, offsetPosition +
-                sf::Vector2f(rotationPositions[0][2].x * blockTexture.getSize().x, rotationPositions[0][2].y * blockTexture.getSize().y)),
-        makeUPtr<Block>(blockTexture, offsetPosition +
-                sf::Vector2f(rotationPositions[0][3].x * blockTexture.getSize().x, rotationPositions[0][3].y * blockTexture.getSize().y)),
+        Block(blockTexture, offsetPosition +
+                sf::Vector2f(rotationPositions[0][0].column * blockTexture.getSize().x, rotationPositions[0][0].row * blockTexture.getSize().y), rotationPositions[0][0]),
+        Block(blockTexture, offsetPosition +
+                sf::Vector2f(rotationPositions[0][1].column * blockTexture.getSize().x, rotationPositions[0][1].row * blockTexture.getSize().y), rotationPositions[0][1]),
+        Block(blockTexture, offsetPosition +
+                sf::Vector2f(rotationPositions[0][2].column * blockTexture.getSize().x, rotationPositions[0][2].row * blockTexture.getSize().y), rotationPositions[0][2]),
+        Block(blockTexture, offsetPosition +
+                sf::Vector2f(rotationPositions[0][3].column * blockTexture.getSize().x, rotationPositions[0][3].row * blockTexture.getSize().y), rotationPositions[0][3]),
     }}
 
 {}
 
 
 
-    Piece::Piece(const Piece &rhs)
-:mCurrentRotation(rhs.mCurrentRotation), mOffset(rhs.mOffset), mRotatationPositions(rhs.mRotatationPositions)
-{
-    int i = 0;
-    for (auto& block : rhs.mBlocks) {
-        mBlocks[i++] = makeUPtr<Block>(*block);
-    }
-}
-
-Piece& Piece::operator=(Piece rhs){
-    std::swap(mCurrentRotation, rhs.mCurrentRotation);
-    std::swap(mOffset, rhs.mOffset);
-    std::swap(mRotatationPositions, rhs.mRotatationPositions);
-    std::swap(mBlocks, rhs.mBlocks);
-
-    return *this;
-}
-
-Piece::~Piece() {
-}
 
 void Piece::rotateRight() {
     mCurrentRotation++;
@@ -112,7 +97,7 @@ void Piece::moveLeft() {
 
     for(auto& blockPositions : mRotatationPositions) {
         for(auto& blockPosition : blockPositions) {
-            blockPosition.x--;
+            blockPosition.column--;
         }
     }
     moveBlocksToNewPositions(mBlocks, mRotatationPositions[mCurrentRotation], mOffset);
@@ -121,7 +106,7 @@ void Piece::moveRight() {
 
     for(auto& blockPositions : mRotatationPositions) {
         for(auto& blockPosition : blockPositions) {
-            blockPosition.x++;
+            blockPosition.column++;
         }
     }
 
@@ -131,7 +116,7 @@ void Piece::moveRight() {
 void Piece::moveDown() {
     for(auto& blockPositions : mRotatationPositions) {
         for(auto& blockPosition : blockPositions) {
-            blockPosition.y++;
+            blockPosition.row++;
         }
     }
     moveBlocksToNewPositions(mBlocks, mRotatationPositions[mCurrentRotation], mOffset);
@@ -142,59 +127,39 @@ void Piece::moveToOffset(const sf::Vector2f& offset) {
 
     moveBlocksToNewPositions(mBlocks, mRotatationPositions[mCurrentRotation], mOffset);
 }
-int Piece::bottom() const {
-    int highestY = 0;
 
-    for (auto& blockPos : mRotatationPositions[mCurrentRotation]) {
-        highestY = (blockPos.y > highestY) ? blockPos.y : highestY;
-    }
 
-    return highestY;
-}
-int Piece::right() const {
-    int highestX = 0;
-
-    for (auto& blockPos : mRotatationPositions[mCurrentRotation]) {
-        highestX = (blockPos.x > highestX) ? blockPos.x : highestX;
-    }
-
-    return highestX;
-}
-
-int Piece::left() const {
-    int lowestX = Pit::WIDTH;
-
-    for (auto& blockPos : mRotatationPositions[mCurrentRotation]) {
-        lowestX = (blockPos.x < lowestX) ? blockPos.x : lowestX;
-    }
-
-    return lowestX;
-}
-
-std::array<UPtr<Block>,4>& Piece::takeBlocks() {
+const std::array<Block, 4> Piece::blocks() const {
     return mBlocks;
 }
 
-const PitCoordinates& Piece::coordinatesForBlock(const UPtr<Block> &block) const {
-    int i = 0;
 
-    for (auto& blockInPiece : mBlocks) {
-        if (block == blockInPiece) {
-            break;
+void Piece::moveToCoords(const PitCoordinates &coordsOfTopLeftBlock) {
+    PitCoordinates coordOffset;
+    coordOffset.column = coordsOfTopLeftBlock.column - mRotatationPositions[mCurrentRotation][0].column;
+    coordOffset.row = coordsOfTopLeftBlock.row - mRotatationPositions[mCurrentRotation][0].row;
+
+    
+
+
+    for (auto& rotation : mRotatationPositions) {
+        for (auto& coords : rotation) {
+            coords.column += coordOffset.column;
+            coords.row += coordOffset.row;
         }
-        i++;
     }
 
-   return mRotatationPositions.at(mCurrentRotation).at(i);
-}
+    moveBlocksToNewPositions(mBlocks, mRotatationPositions[mCurrentRotation], mOffset);
 
+
+}
 const std::array<PitCoordinates, 4>& Piece::coordinatesOfAllBlocks() const {
     return mRotatationPositions[mCurrentRotation];
 }
 
 void Piece::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     for(auto &block : mBlocks){
-        target.draw(*block, states);
+        target.draw(block, states);
     }
 }
 

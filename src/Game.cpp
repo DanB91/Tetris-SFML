@@ -5,13 +5,17 @@
 #include "Pieces.hpp"
 #include "KeyBuffer.hpp"
 
+//TODO: define canPieceTakeAction()
+//TODO: need to unify block locations.  First look at line 65 of Pit.cpp
 
 static constexpr float PIECE_MOVE_TIME = .5; //seconds
 static constexpr float PIT_WALL_WIDTH = 5; //how many pixels is the wall of the pit?
 static const sf::Vector2f PIT_OFFSET = sf::Vector2f(275, 45);
 
-static const sf::Vector2f PIECE_SPAWN_OFFSET = sf::Vector2f(PIT_OFFSET.x + PIT_WALL_WIDTH, PIT_OFFSET.y + PIT_WALL_WIDTH);
-static const sf::Vector2f NEXT_PIECE_OFFSET = sf::Vector2f(PIT_OFFSET.x - 100, PIT_OFFSET.y);
+static const sf::Vector2f PIECE_SPAWN_OFFSET = {PIT_OFFSET.x + PIT_WALL_WIDTH, PIT_OFFSET.y + PIT_WALL_WIDTH};
+static const PitCoordinates PIECE_SPAWN_COORDINATES = {4,0};
+static const sf::Vector2f NEXT_PIECE_OFFSET = {PIT_OFFSET.x - 100, PIT_OFFSET.y};
+static const sf::Vector2f SCORE_POSITION = {NEXT_PIECE_OFFSET.x, NEXT_PIECE_OFFSET.y + 100};
 
 static bool isPieceStopped = false;
 
@@ -25,16 +29,9 @@ static bool canPieceRotateLeft(const Piece &piece, const Pit &pit);
 static void dropPiece(Piece& piece, const Pit& pit);
 static bool canSpawn(const Piece& piece, const Pit& pit);
 
-static std::array<UPtr<Block>, 20> blocks; //for test purposes only
 
-
-
-Game::Game(const std::string &imagesPath)
-    : mIsRunning(true), mImagesPath(imagesPath) {
-
-        if(mImagesPath[mImagesPath.length()] != '/') {
-            mImagesPath += std::string("/");
-        }
+Game::Game(const std::string &resourcesPath)
+    : mIsRunning(true), mResourcesPath(resourcesPath), mImagesPath(resourcesPath + "/images/"), mFontsPath(resourcesPath + "/fonts/") {
 
         loadResources();
     }
@@ -50,19 +47,19 @@ void Game::loadResources() {
     mTextureHolder.load(TextureID::Z, mImagesPath + "Z.png");
     mTextureHolder.load(TextureID::T, mImagesPath + "T.png");
 
+    mFontHolder.load(FontID::GameFont, mFontsPath + "simplistic_regular.ttf"); 
 
     mPit = makeUPtr<Pit>(mTextureHolder.get(TextureID::Pit), PIT_OFFSET);
+    
+    auto pitBounds = mPit->boundingRect();
+    mScore = makeUPtr<Score>(mFontHolder, sf::Vector2f(pitBounds.left + pitBounds.width + 100, NEXT_PIECE_OFFSET.y));
+    
     mNextPiece = generateNextPiece(mTextureHolder); 
     mCurrentPiece = makeUPtr<I>(mTextureHolder, PIECE_SPAWN_OFFSET);
+    mCurrentPiece->moveToCoords(PIECE_SPAWN_COORDINATES);
 
-    int pos = 0;
-    for (auto& block : blocks) {
-        block = makeUPtr<Block>(mTextureHolder.get(TextureID::I), PIECE_SPAWN_OFFSET);
-        block->move({0, pos++}, PIECE_SPAWN_OFFSET);
-    }
 }
 
-//TODO: Need to do collision detection for other blocks
 static bool canPieceMoveDown(const Piece &piece, const Pit &pit) {
     Piece tmpPiece = piece;
     tmpPiece.moveDown();
@@ -238,19 +235,22 @@ void Game::update(const sf::Time &delta) {
             isPieceStopped = false;
 
             //1. add blocks to pit
-            for (auto& block : mCurrentPiece->takeBlocks()) {
-                mPit->putBlockAtCoords(std::move(block), mCurrentPiece->coordinatesForBlock(block));
+            for (auto& block : mCurrentPiece->blocks()) {
+                mPit->putBlock(block);
             }
 
             //
 
             //2. if there are full lines, we want to delete them and add to score
+            switch(mPit->deleteFullRows()){
+            }
             
             //3. if there is room, spawn new piece, else lose
             
            if (canSpawn(*mNextPiece, *mPit)) {
                mCurrentPiece = std::move(mNextPiece);
                mCurrentPiece->moveToOffset(PIECE_SPAWN_OFFSET);
+               mCurrentPiece->moveToCoords(PIECE_SPAWN_COORDINATES);
                mNextPiece = generateNextPiece(mTextureHolder);
            }
 
@@ -263,13 +263,9 @@ void Game::update(const sf::Time &delta) {
 void Game::render(sf::RenderTarget &rt) const {
     rt.clear(sf::Color(34,34,34));
     rt.draw(*mPit);
+    rt.draw(*mScore);
     rt.draw(*mNextPiece);
     rt.draw(*mCurrentPiece);
     
-    /*
-    for (auto& block : blocks) {
-        rt.draw(*block);
-    }
-    */
 }
 

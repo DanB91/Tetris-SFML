@@ -6,24 +6,25 @@
 #include <ostream>
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
-
-
+#include "Pit.hpp"
 
 class Block : public sf::Drawable {
 public:
     //pos represent position in pixels
-    Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition);
+    Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition, const PitCoordinates &coords);
 
     //newPos is in block coordinates, while offset uses pixel measurements
     void move(const PitCoordinates &newPos, const sf::Vector2f& offset);
 
     const sf::Vector2f& getPosition() const;
-
+    const PitCoordinates& coordinates() const;
+    
     friend std::ostream& operator<<(std::ostream &os, const Block &block);
 
 
 private:
     sf::Sprite mBlockSprite;
+    PitCoordinates mCoordinates;
 
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -32,12 +33,8 @@ private:
 
 class Piece : public sf::Drawable{
 public:
-    std::array<UPtr<Block>,4>& takeBlocks();
-    int bottom() const; //gets the y position of the bottom most block.  Used to see if piece should keep moving down
-    int left() const; //gets the x position of the left most block.  Used to see if piece should keep moving down
-    int right() const; //gets the x position of the right most block.  Used to see if piece should keep moving down
-    const PitCoordinates& coordinatesForBlock(const UPtr<Block> &block) const;
     const std::array<PitCoordinates, 4>& coordinatesOfAllBlocks() const;
+    const std::array<Block, 4> blocks() const;
 
     void rotateLeft();
     void rotateRight();
@@ -45,18 +42,16 @@ public:
     void moveRight();
     void moveDown();
     void moveToOffset(const sf::Vector2f& offset); //moves piece to a pixel position
+    void moveToCoords(const PitCoordinates &coordsOfTopLeftBlock);
 
-
+protected:
     Piece(const Array2D<PitCoordinates,4,4> &rotationPositions, const sf::Texture &blockTexture, const sf::Vector2f &pixelPosition);
-    Piece(const Piece &rhs);
-    Piece& operator=(Piece rhs);
-    virtual ~Piece();
 
 private:
     int mCurrentRotation = 0;
     sf::Vector2f mOffset;
     Array2D<PitCoordinates,4,4> mRotatationPositions;
-    std::array<UPtr<Block>,4> mBlocks;
+    std::array<Block,4> mBlocks;
 
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };
