@@ -14,10 +14,12 @@ public:
     Block(const sf::Texture &texture, const sf::Vector2f &pixelPosition, const PitCoordinates &coords);
 
     //newPos is in block coordinates, while offset uses pixel measurements
-    void move(const PitCoordinates &newPos, const sf::Vector2f& offset);
+    void moveAbsolute(const PitCoordinates &newPos, const sf::Vector2f& offset);
+    void moveDown();
 
     const sf::Vector2f& getPosition() const;
     const PitCoordinates& coordinates() const;
+    PitCoordinates& coordinates();
     
     friend std::ostream& operator<<(std::ostream &os, const Block &block);
 

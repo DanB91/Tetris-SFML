@@ -11,7 +11,7 @@ static void moveBlocksToNewPositions(std::array<Block,4> &blocks, const std::arr
         //DBGMSG("Block original pos: " << blocks[i]);
 
         const PitCoordinates& blockPosition = rotationPosition[i];
-        blocks[i].move(blockPosition, offset);
+        blocks[i].moveAbsolute(blockPosition, offset);
 
         //DBGMSG("Rotation Vector: Row:" << blockPosition.row << " Column: " << blockPosition.column);
         //DBGMSG("Block new pos: " << blocks[i]);
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream &os, const Block &block)
 }
 
 
-void Block::move(const PitCoordinates& newPos, const sf::Vector2f& offset ) {
+void Block::moveAbsolute(const PitCoordinates& newPos, const sf::Vector2f& offset ) {
     sf::Vector2f texSize(mBlockSprite.getTextureRect().width,
             mBlockSprite.getTextureRect().height);
 
@@ -41,7 +41,12 @@ void Block::move(const PitCoordinates& newPos, const sf::Vector2f& offset ) {
     mCoordinates = newPos;
 }
 
+void Block::moveDown() {
+    mCoordinates.row++;
+    const sf::Vector2f& currentPos = mBlockSprite.getPosition();
 
+    mBlockSprite.setPosition(currentPos.x, currentPos.y + mBlockSprite.getTextureRect().height);
+}
 
 void Block::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(mBlockSprite, states);
@@ -58,6 +63,9 @@ const PitCoordinates& Block::coordinates() const {
 }
 
 
+PitCoordinates& Block::coordinates() {
+    return mCoordinates;
+}
 
 
 //piece methods

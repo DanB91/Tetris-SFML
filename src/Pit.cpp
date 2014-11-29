@@ -62,18 +62,13 @@ static void deleteRow(int rowNum, Array2D<UPtr<Block>, Pit::HEIGHT, Pit::WIDTH>&
     for (auto it = blocks.begin() + rowNum; it != blocks.begin(); it--) {
         DBGMSG("Before:" << *it);
 
-        for (auto& block : *it) {
-            if (block) {
-                PitCoordinates newCoords;
-                auto oldCoords = block->coordinates();
-
-                newCoords.column = oldCoords.column;
-                newCoords.row = oldCoords.row + 1;
-
-            }
-        }
         *it = std::move(*(it - 1));
 
+        for (auto& block : *it) {
+            if (block) {
+                block->moveDown();
+            }
+        }
 
         DBGMSG("After:" << *it);
     }
