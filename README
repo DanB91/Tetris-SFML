@@ -17,11 +17,10 @@ To Build:
     7) Enjoy!
 
 Controls:
-
-X - Rotate clockwise
-Z - Rotate counter-clockwise
-Left, Right and Down arrow keys - Move left, right and down one space
-Spacebar - drop piece
+    X - Rotate clockwise
+    Z - Rotate counter-clockwise
+    Left, Right and Down arrow keys - Move left, right and down one space
+    Spacebar - drop piece
 
 Usage:
  ./Tetris [resource_dir]
