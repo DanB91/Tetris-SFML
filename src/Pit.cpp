@@ -53,6 +53,7 @@ void Pit::putBlock(const Block& block) {
     }
 }
 
+
 static void deleteRow(int rowNum, Array2D<UPtr<Block>, Pit::HEIGHT, Pit::WIDTH>& blocks) {
 
     //delete row

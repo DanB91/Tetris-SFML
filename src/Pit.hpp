@@ -26,6 +26,8 @@ public:
     bool isBlockInBounds(const PitCoordinates &coords) const;
     
     void putBlock(const Block& block);
+
+    void clear();  //clears the pit.  used when reseting for a new game
     
     //returns number of rows deleted
     int deleteFullRows();

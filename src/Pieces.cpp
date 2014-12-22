@@ -147,8 +147,6 @@ void Piece::moveToCoords(const PitCoordinates &coordsOfTopLeftBlock) {
     coordOffset.column = coordsOfTopLeftBlock.column - mRotatationPositions[mCurrentRotation][0].column;
     coordOffset.row = coordsOfTopLeftBlock.row - mRotatationPositions[mCurrentRotation][0].row;
 
-    
-
 
     for (auto& rotation : mRotatationPositions) {
         for (auto& coords : rotation) {
@@ -193,6 +191,61 @@ J::J(const TextureHolder &textures, const sf::Vector2f &pos)
             textures.get(TextureID::J), pos)
 {}
 
+O::O(const TextureHolder &textures, const sf::Vector2f &pos)
+    :Piece({{
+            {{{0,0},{1,0},{0,1},{1,1}}},
+            {{{0,0},{1,0},{0,1},{1,1}}},
+            {{{0,0},{1,0},{0,1},{1,1}}},
+            {{{0,0},{1,0},{0,1},{1,1}}},
+            }},
+            textures.get(TextureID::O), pos)
+{}
+
+L::L(const TextureHolder &textures, const sf::Vector2f &pos)
+    :Piece({{
+            {{{0,0},{0,1},{0,2},{1,2}}},
+            {{{-1,1},{0,1},{1,1},{-1,2}}},
+            {{{0,0},{0,1},{0,2},{-1,0}}},
+            {{{-1,1},{0,1},{1,1},{1,0}}},
+            }},
+            textures.get(TextureID::L), pos)
+{}
+
+Z::Z(const TextureHolder &textures, const sf::Vector2f &pos)
+    :Piece({{
+            {{{0,0},{1,0},{1,1},{2,1}}},
+            {{{1,-1},{1,0},{0,0},{0,1}}},
+            {{{0,-1},{1,-1},{1,0},{2,0}}},
+            {{{1,1},{1,0},{2,0},{2,-1}}},
+            }},
+            textures.get(TextureID::Z), pos)
+{}
 
 
+S::S(const TextureHolder &textures, const sf::Vector2f &pos)
+    :Piece({{
+            {{{2,0},{1,0},{1,1},{0,1}}},
+            {{{1,1},{1,0},{0,0},{0,-1}}},
+            {{{2,-1},{1,-1},{1,0},{0,0}}},
+            {{{2,1},{2,0},{1,0},{1,-1}}},
+            }},
+            textures.get(TextureID::S), pos)
+{}
+
+T::T(const TextureHolder &textures, const sf::Vector2f &pos)
+    :Piece({{
+            {{{0,0},{1,0},{2,0},{1,1}}},
+            {{{1,-1},{1,0},{1,1},{0,0}}},
+            {{{0,0},{1,0},{2,0},{1,-1}}},
+            {{{1,1},{1,0},{1,-1},{2,0}}},
+            }},
+            textures.get(TextureID::T), pos)
+{}
+
+/*
+
+case PieceTypes::T:
+    return makeUPtr<I>(textureHolder, NEXT_PIECE_OFFSET);
+    break;
+*/
 

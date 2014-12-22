@@ -1,0 +1,32 @@
+This is a simple Tetris clone written in C++11 with the SFML library.
+
+Note: It does not currently have sound.
+
+Requirements:
+    -SFML
+    -CMake
+    -Compiler that supports C++11 (was compiled using clang on my machine).
+
+To Build:
+    1) Clone repo
+    2) Create a build directory inside of the repo (e.g. "mkdir build")
+    3) Go to the build directory (e.g. "cd build")
+    4) cmake ..
+    5) make
+    6) ./Tetris
+    7) Enjoy!
+
+Controls:
+
+X - Rotate clockwise
+Z - Rotate counter-clockwise
+Left, Right and Down arrow keys - Move left, right and down one space
+Spacebar - drop piece
+
+TODO:
+
+- Implement sound!
+- Allow different resolutions
+- Perhaps implement animations when blocks dissapear
+
+
