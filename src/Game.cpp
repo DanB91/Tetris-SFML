@@ -167,8 +167,10 @@ void Game::handleKeyEvent(const sf::Event &e) {
                 break;
             case sf::Keyboard::X:
                 if (canPieceRotateRight(*mCurrentPiece, *mPit)) mCurrentPiece->rotateRight();
+                break;
             case sf::Keyboard::Escape:
                 mIsRunning = false;
+                break;
             default:
                 break;
 
